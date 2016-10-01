@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 CHANNELS = 1
 RATE = 8000
-RECORD_SECONDS = 0.5
+RECORD_SECONDS = 0.1
 sd.default.samplerate = RATE
 
 print("Ready")
@@ -21,23 +21,28 @@ def zero_crossings(signal):
             crossings += 1
         prev = cur
 
-    return RECORD_SECONDS / (crossings - 1 // 2)
+    return RECORD_SECONDS, crossings, (RECORD_SECONDS / (crossings - 1 // 2))
 
 
 # Finds frequency via autocorrelation
 def autocorrelation(signal):
+
     correlations = []
+    prev = 0
 
     for i in range(0, len(signal)):
         cor = 0
         for k in range(0, len(signal) - i):
             cor += (signal[k]) * (signal[k + i])
-            correlations.append(cor)
+        correlations.append(cor)
+        
+        if i > 10 and prev > 0.8 * correlations[0] and cor < prev:
+            peak = i - 1
+            break
+        
+        prev = cor
 
-    # Plots correlation coefficients
-    ax2 = fig.add_subplot(212)
-    ax2.plot(correlations)
-
+    return 1 / (peak * (RECORD_SECONDS / (RATE * RECORD_SECONDS))), correlations[peak] / correlations[0]
 
 while True:
 
@@ -54,12 +59,4 @@ while True:
     # Converts recording into 1D array
     buffer = [item for sublist in recording for item in sublist]
 
-    fig = plt.figure()
-
-    autocorrelation(buffer)
-
-    # Plots unprocessed signal
-    amplitudes = fig.add_subplot(211)
-    amplitudes.plot(buffer)
-
-    plt.show()
+    print(autocorrelation(buffer))
