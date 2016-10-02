@@ -1,6 +1,6 @@
 import sounddevice as sd
-import matplotlib.pyplot as plt
 
+# Rate and recording time can be changed to vary accuracy of frequency detection
 CHANNELS = 1
 RATE = 8000
 RECORD_SECONDS = 0.1
