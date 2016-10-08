@@ -11,7 +11,7 @@ GPIO.setup(18, GPIO.OUT)
 
 # Sampling RATE and RECORDING_TIME can be changed to vary accuracy of frequency detection
 CHANNELS = 1
-RATE = 8000
+RATE = 10000
 RECORDING_TIME = 0.1
 LISTENING_THRESHOLD = 0.001     # Average amplitude of signal below which input is ignored
 TUNING_ACCURACY = 1             # +- Hz
@@ -71,7 +71,6 @@ def autocorrelation(signal):
 
         return 1 / (peak * (RECORDING_TIME / (RATE * RECORDING_TIME)))
 
-
 while True:
 
     # Generates 2D array from microphone audio
@@ -95,13 +94,11 @@ while True:
         if type(recorded_frequency) == float:   # Avoids using recorded_frequencies which are 'None' due to input error
 
             prev_diff = 999
-            print('*')
             
             # Finds which string is being plucked (chooses nearest frequency)
             for frequency in std_tuning:
 
                 diff = abs(frequency - recorded_frequency)
-
                 if diff < prev_diff:
 
                     target = frequency
@@ -109,24 +106,31 @@ while True:
 
                 prev_diff = diff
 
+            # Motor shakes if string is in tune
             if final_diff < TUNING_ACCURACY:
 
                 print('Tuned!')
-                input()     # Waits for keypress before tuning new string
+                GPIO.output(17, True)
+                GPIO.output(18, False)
+                time.sleep(0.2)
+
+                GPIO.output(17, False)
+                GPIO.output(18, True)
+                time.sleep(0.2)
             
             # If recorded_frequency is flat, turns tuning peg clockwise (to sharpen note)
             elif recorded_frequency < target:
 
-                GPIO.output(17, True)
-                GPIO.output(18, False)
-                time.sleep(1)
+                GPIO.output(17, False)
+                GPIO.output(18, True)
+                time.sleep(0.5)
             
             # If recorded_frequency is sharp, turns tuning peg clockwise (to flatten note)
             else:
 
-                GPIO.output(17, False)
-                GPIO.output(18, True)
-                time.sleep(1)
+                GPIO.output(17, True)
+                GPIO.output(18, False)
+                time.sleep(0.5)
 
             # Stops motor
             GPIO.output(17, False)
