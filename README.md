@@ -1,4 +1,4 @@
-##### This project was completed using entirely self-taught programming skills. I wrote this program during my A-level studies before I began studying Computer Science as something to write about on my university applications!
+##### This project was completed using self-taught programming skills during my A-level studies as something to write about on my university applications!
 
 # guitar-tuner
 This is a Python guitar tuner set to mechanically tune a guitar using a Raspberry Pi and DC motor. The [sounddevice](https://python-sounddevice.readthedocs.io/en/0.3.12/) package (providing  bindings for the PortAudio library) was used to import audio data into NumPy arrays. An autocorrelation algorithm is then used to identify the audio frequencies from which note correction can be calculated.
